@@ -37,9 +37,22 @@ function fechaModal() {
     botaoEditar.classList.add('hidden')
     inpNome.removeAttribute('data-key');
   }
-  else
-    botaoSalvar.classList.add('hidden')
-  
+  else {
+    botaoSalvar.classList.add('hidden');
+  }
+
+  inpNome.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
+  inpNome.nextElementSibling.classList.add('hidden');
+
+  inpQntd.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
+  inpQntd.nextElementSibling.classList.add('hidden');
+
+  inpUn.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
+  inpUn.nextElementSibling.classList.add('hidden');
+
+  inpPreco.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
+  inpPreco.nextElementSibling.classList.add('hidden');
+
   modal.close();
   limpaInputs();
 }
@@ -123,7 +136,6 @@ function carregaDados() {
 }
 
 function addItem() {
-
   const item = {
     "id": 0,
     "nome": inpNome.value,
@@ -132,9 +144,35 @@ function addItem() {
     "preco": inpPreco.value
   }
 
-  addProduto(item);
-  carregaDados();
-  fechaModal();
+  if(item.nome == "" || item.qntd == "" 
+      || item.un == "" || item.preco == ""){
+   
+    if(item.nome == ""){
+      inpNome.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpNome.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpNome.nextElementSibling.classList.remove('hidden');
+    }
+    if(item.qntd == ""){
+      inpQntd.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpQntd.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpQntd.nextElementSibling.classList.remove('hidden');
+    }
+    if(item.un == ""){
+      inpUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpUn.nextElementSibling.classList.remove('hidden');
+    }
+    if(item.preco == ""){
+      inpPreco.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpPreco.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpPreco.nextElementSibling.classList.remove('hidden');
+    }
+  }
+  else {
+    addProduto(item);
+    carregaDados();
+    fechaModal();
+  }
 }
 
 function editItem() {
