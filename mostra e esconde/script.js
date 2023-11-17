@@ -6,6 +6,7 @@ const inpUn = document.querySelector('#inpUn');
 const inpQntd = document.querySelector('#inpQntd');
 const inpNome = document.querySelector('#inpNome');
 
+const modal = document.querySelector('#modal');
 const botaoAdd = document.querySelector('#divInput').firstElementChild;
 const botaoSalvar = document.querySelector('#btnSalvar');
 const botaoEditar = document.querySelector('#btnEditar');
@@ -14,9 +15,11 @@ const botaoCancelar = document.querySelector('#btnCancelar');
 // EVENTOS -------------------------------------------------
 
 botaoAdd.addEventListener("click", () => abreModal());
+modal.addEventListener('close', () => fechaModal());
+
 botaoSalvar.addEventListener("click", () => addItem());
 botaoEditar.addEventListener("click", () => editItem());
-botaoCancelar.addEventListener('click', () => fechaModal());
+botaoCancelar.addEventListener('click', () => modal.close());
 
 // EVENTOS -------------------------------------------------
 
@@ -29,41 +32,37 @@ function limpaInputs() {
   inpNome.value = '';
 }
 
-function abreModal(item) {
-  const tituloModal = document.querySelector('#modal').firstElementChild;
+function fechaModal() {
+  if(inpNome.getAttribute('data-key')){
+    botaoEditar.classList.add('hidden')
+    inpNome.removeAttribute('data-key');
+  }
+  else
+    botaoSalvar.classList.add('hidden')
+  
+  modal.close();
+  limpaInputs();
+}
 
-  console.log(item);
+function abreModal(item) {
+  modal.showModal();
+
   if(item) {
     const tds = item.children;
-    tituloModal.innerHTML = 'Editar um produto:';
+    modal.firstElementChild.innerHTML = 'Editar um produto:'
 
     inpNome.value = tds[0].innerHTML;
     inpQntd.value = tds[1].innerHTML;
     inpUn.value = tds[2].innerHTML;
     inpPreco.value = tds[3].innerHTML;
 
-    inpNome.setAttribute('data-key', item.getAttribute('data-key'))
+    inpNome.setAttribute('data-key', item.getAttribute('data-key'));
     botaoEditar.classList.remove('hidden');
   }
   else{
-    tituloModal.innerHTML = 'Adicionar novo produto:';
+    modal.firstElementChild.innerHTML = 'Adicionar um novo produto:'
     botaoSalvar.classList.remove('hidden');
   }
-
-  const modal = document.querySelector('#modal');
-  modal.showModal();
-}
-
-function fechaModal() { 
-  if(inpNome.getAttribute('data-key')){
-    inpNome.removeAttribute('data-key')
-    botaoEditar.classList.add('hidden');
-  }
-  else
-    botaoSalvar.classList.add('hidden');
-
-  modal.close();
-  limpaInputs();
 }
 
 function carregaEventos() {
@@ -98,11 +97,11 @@ function carregaDados() {
   produtos.forEach(linha => {
     const { id, ...rest } = linha;
 
+
     tabela += `<tr data-key="${id}">`;
     for (const key in rest) {
       tabela += `<td>${rest[key]}</td>`;
     }
-
     tabela +=
       `<td>
         <div class="flex justify-end gap-3">
@@ -124,6 +123,7 @@ function carregaDados() {
 }
 
 function addItem() {
+
   const item = {
     "id": 0,
     "nome": inpNome.value,
@@ -131,9 +131,10 @@ function addItem() {
     "un": inpUn.value,
     "preco": inpPreco.value
   }
+
   addProduto(item);
   carregaDados();
-  fechaModal(false);
+  fechaModal();
 }
 
 function editItem() {
@@ -144,12 +145,13 @@ function editItem() {
     "un": inpUn.value,
     "preco": inpPreco.value
   }
+  
   editProduto(novoItem);
   carregaDados();
-  fechaModal(true);
+  fechaModal();
 }
 
-function removeItem(id) {
-  removeProduto(Number(id));
+function removeItem(item) {
+  removeProduto(Number(item));
   carregaDados();
 }
