@@ -30,16 +30,6 @@ function limpaInputs() {
   inpUn.value = '';
   inpQntd.value = '';
   inpNome.value = '';
-}
-
-function fechaModal() {
-  if(inpNome.getAttribute('data-key')){
-    botaoEditar.classList.add('hidden')
-    inpNome.removeAttribute('data-key');
-  }
-  else {
-    botaoSalvar.classList.add('hidden');
-  }
 
   inpNome.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
   inpNome.nextElementSibling.classList.add('hidden');
@@ -52,6 +42,45 @@ function fechaModal() {
 
   inpPreco.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
   inpPreco.nextElementSibling.classList.add('hidden');
+}
+
+function validaInputs(item) {
+  if (item.nome == "" || item.qntd == ""
+    || item.un == "" || item.preco == "") {
+
+    if (item.nome == "") {
+      inpNome.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpNome.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpNome.nextElementSibling.classList.remove('hidden');
+    }
+    if (item.qntd == "") {
+      inpQntd.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpQntd.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpQntd.nextElementSibling.classList.remove('hidden');
+    }
+    if (item.un == "") {
+      inpUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpUn.nextElementSibling.classList.remove('hidden');
+    }
+    if (item.preco == "") {
+      inpPreco.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      inpPreco.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      inpPreco.nextElementSibling.classList.remove('hidden');
+    }
+    return false;
+  }
+  return true;
+}
+
+function fechaModal() {
+  if(inpNome.getAttribute('data-key')){
+    botaoEditar.classList.add('hidden')
+    inpNome.removeAttribute('data-key');
+  }
+  else {
+    botaoSalvar.classList.add('hidden');
+  }
 
   modal.close();
   limpaInputs();
@@ -144,31 +173,7 @@ function addItem() {
     "preco": inpPreco.value
   }
 
-  if(item.nome == "" || item.qntd == "" 
-      || item.un == "" || item.preco == ""){
-   
-    if(item.nome == ""){
-      inpNome.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
-      inpNome.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
-      inpNome.nextElementSibling.classList.remove('hidden');
-    }
-    if(item.qntd == ""){
-      inpQntd.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
-      inpQntd.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
-      inpQntd.nextElementSibling.classList.remove('hidden');
-    }
-    if(item.un == ""){
-      inpUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
-      inpUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
-      inpUn.nextElementSibling.classList.remove('hidden');
-    }
-    if(item.preco == ""){
-      inpPreco.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
-      inpPreco.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
-      inpPreco.nextElementSibling.classList.remove('hidden');
-    }
-  }
-  else {
+  if(validaInputs(item)){
     addProduto(item);
     carregaDados();
     fechaModal();
@@ -184,9 +189,11 @@ function editItem() {
     "preco": inpPreco.value
   }
   
-  editProduto(novoItem);
-  carregaDados();
-  fechaModal();
+  if(validaInputs(novoItem)){
+    editProduto(novoItem);
+    carregaDados();
+    fechaModal();
+  }
 }
 
 function removeItem(item) {
