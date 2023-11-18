@@ -200,11 +200,13 @@ function carregaDados() {
 }
 
 function addItem() {
+   const opcs = Array.from(inpUn.children).map((el) => ({"key": el.value, "value": el.innerHTML}));
+  
   const item = {
     "id": 0,
     "nome": inpNome.value,
     "qntd": inpQntd.value,
-    "un": inpUn.value,
+    "un": opcs.find(opc => opc.key == inpUn.value)?.value,
     "preco": inpPreco.value
   }
 
