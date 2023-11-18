@@ -1,8 +1,8 @@
-import { produtos, addProduto, editProduto, removeProduto } from './data.js';
+import { produtos, addProduto, editProduto, removeProduto, opcoesUnidade } from './data.js';
 
 
 const inpPreco = document.querySelector('#inpPreco');
-const inpUn = document.querySelector('#inpUn');
+const selectUn = document.querySelector('#selectUn');
 const inpQntd = document.querySelector('#inpQntd');
 const inpNome = document.querySelector('#inpNome');
 
@@ -27,7 +27,7 @@ carregaDados();
 
 function limpaInputs() {
   inpPreco.value = '';
-  inpUn.value = '';
+  selectUn.innerHTML = '<option value="-1" selected hidden>Escolher...</option>';
   inpQntd.value = '';
   inpNome.value = '';
 
@@ -37,40 +37,49 @@ function limpaInputs() {
   inpQntd.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
   inpQntd.nextElementSibling.classList.add('hidden');
 
-  inpUn.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
-  inpUn.nextElementSibling.classList.add('hidden');
+  selectUn.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
+  selectUn.nextElementSibling.classList.add('hidden');
 
   inpPreco.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
   inpPreco.nextElementSibling.classList.add('hidden');
 }
 
 function validaInputs(item) {
-  if (item.nome == "" || item.qntd == ""
-    || item.un == "" || item.preco == "") {
+  if (item.nome == "" || (item.qntd == "" || Number.isNaN(Number(item.qntd)))
+    || item.un == "-1" || (item.preco == "" || Number.isNaN(Number(item.preco)))) {
 
     if (item.nome == "") {
       inpNome.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
       inpNome.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
       inpNome.nextElementSibling.classList.remove('hidden');
     }
-    if (item.qntd == "") {
+    if (item.qntd == "" || Number.isNaN(Number(item.qntd))) {
       inpQntd.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
       inpQntd.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
       inpQntd.nextElementSibling.classList.remove('hidden');
+      inpQntd.nextElementSibling.innerHTML = item.qntd == ""? "* Campo Obrigatório":"* Valor Inválido";
     }
-    if (item.un == "") {
-      inpUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
-      inpUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
-      inpUn.nextElementSibling.classList.remove('hidden');
+    if (item.un == "-1") {
+      selectUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
+      selectUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
+      selectUn.nextElementSibling.classList.remove('hidden');
     }
-    if (item.preco == "") {
+    if (item.preco == "" || Number.isNaN(Number(item.preco))) {
       inpPreco.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
       inpPreco.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
       inpPreco.nextElementSibling.classList.remove('hidden');
+      inpPreco.nextElementSibling.innerHTML = item.preco == ""? "* Campo Obrigatório":"* Valor Inválido";
     }
     return false;
   }
   return true;
+}
+
+function carregaOpcoes() {
+  const listaOpcoes = opcoesUnidade();
+  listaOpcoes.forEach((op, idx) => {
+    selectUn.innerHTML += `<option value="${idx}">${op}</option>`;
+  })
 }
 
 function fechaModal() {
@@ -87,15 +96,23 @@ function fechaModal() {
 }
 
 function abreModal(item) {
+  carregaOpcoes();
   modal.showModal();
 
   if(item) {
     const tds = item.children;
-    modal.firstElementChild.innerHTML = 'Editar um produto:'
+    const opcoes = Array.from(selectUn.children).map((op) => {
+      return (
+        {
+          "key": op.value,
+          "value": op.innerHTML
+        }
+      )});
 
+    modal.firstElementChild.innerHTML = 'Editar um produto:'
     inpNome.value = tds[0].innerHTML;
     inpQntd.value = tds[1].innerHTML;
-    inpUn.value = tds[2].innerHTML;
+    selectUn.value = opcoes.find((op)=>op.value == tds[2].innerHTML)?.key;
     inpPreco.value = tds[3].innerHTML;
 
     inpNome.setAttribute('data-key', item.getAttribute('data-key'));
@@ -147,10 +164,10 @@ function carregaDados() {
     tabela +=
       `<td>
         <div class="flex justify-end gap-3">
-          <button data-key="${id}" class="bg-amber-50 px-1 rounded-md hover:bg-amber-100" name="editBtn">
+          <button data-key="${id}" class="bg-amber-50 px-1 rounded-md hover:bg-amber-100 focus:ring focus:ring-amber-100 focus:outline-none" name="editBtn">
             <span class="material-symbols-outlined text-xl text-amber-400">edit</span>
           </button>
-          <button data-key="${id}" class="bg-red-50 px-1 rounded-md hover:bg-red-100" name="removeBtn">
+          <button data-key="${id}" class="bg-red-50 px-1 rounded-md hover:bg-red-100 focus:ring focus:ring-red-100 focus:outline-none" name="removeBtn">
             <span class="material-symbols-outlined  text-xl text-red-400">delete</span>
           </button>
         </div>
@@ -165,13 +182,23 @@ function carregaDados() {
 }
 
 function addItem() {
+  const opcoes = Array.from(selectUn.children).map((op) => {
+    return (
+      {
+        "key": op.value,
+        "value": op.innerHTML
+      }
+    )});
+
   const item = {
     "id": 0,
     "nome": inpNome.value,
     "qntd": inpQntd.value,
-    "un": inpUn.value,
+    "un": opcoes.find((op)=>op.key == selectUn.value)?.value,
     "preco": inpPreco.value
   }
+
+  console.log(item);
 
   if(validaInputs(item)){
     addProduto(item);
@@ -181,14 +208,22 @@ function addItem() {
 }
 
 function editItem() {
+  const opcoes = Array.from(selectUn.children).map((op) => {
+    return (
+      {
+        "key": op.value,
+        "value": op.innerHTML
+      }
+    )});
+
   const novoItem = {
     "id": Number(inpNome.getAttribute('data-key')),
     "nome": inpNome.value,
     "qntd": inpQntd.value,
-    "un": inpUn.value,
+    "un": opcoes.find((op)=>op.key == selectUn.value)?.value,
     "preco": inpPreco.value
   }
-  
+
   if(validaInputs(novoItem)){
     editProduto(novoItem);
     carregaDados();
