@@ -25,12 +25,7 @@ botaoCancelar.addEventListener('click', () => modal.close());
 
 carregaDados();
 
-function limpaInputs() {
-  inpPreco.value = '';
-  selectUn.innerHTML = '<option value="-1" selected hidden>Escolher...</option>';
-  inpQntd.value = '';
-  inpNome.value = '';
-
+function limpaValidacaoInputs() {
   inpNome.className = "mt-1 py-3 px-4 border border-slate-300 rounded-md hover:border-blue-400 focus:ring focus:border-blue-400 focus:outline-none";
   inpNome.nextElementSibling.classList.add('hidden');
 
@@ -44,9 +39,20 @@ function limpaInputs() {
   inpPreco.nextElementSibling.classList.add('hidden');
 }
 
+function limpaInputs() {
+  inpPreco.value = '';
+  selectUn.innerHTML = '<option value="-1" selected hidden>Escolher...</option>';
+  inpQntd.value = '';
+  inpNome.value = '';
+
+  limpaValidacaoInputs();
+}
+
 function validaInputs(item) {
+  limpaInputs();
+
   if (item.nome == "" || (item.qntd == "" || Number.isNaN(Number(item.qntd)))
-    || item.un == "-1" || (item.preco == "" || Number.isNaN(Number(item.preco)))) {
+    || item.un == "Escolher..." || (item.preco == "" || Number.isNaN(Number(item.preco)))) {
 
     if (item.nome == "") {
       inpNome.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
@@ -59,7 +65,7 @@ function validaInputs(item) {
       inpQntd.nextElementSibling.classList.remove('hidden');
       inpQntd.nextElementSibling.innerHTML = item.qntd == ""? "* Campo Obrigatório":"* Valor Inválido";
     }
-    if (item.un == "-1") {
+    if (item.un == "Escolher...") {
       selectUn.classList.remove('border-slate-300', 'hover:border-blue-400', 'focus:ring', 'focus:border-blue-400');
       selectUn.classList.add('border-red-400', 'focus:ring', 'focus:ring-red-200');
       selectUn.nextElementSibling.classList.remove('hidden');
